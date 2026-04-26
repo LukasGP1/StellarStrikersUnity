@@ -1,17 +1,42 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Player : MonoBehaviour
+public class PlayerScript : MonoBehaviour
 {
-    public float moveSpeed;
-    public GameObject bullet;
-    public float bulletSpeed;
-    public Color bulletColor;
+    private float moveSpeed;
+    private GameObject bulletPrefab;
+    private float bulletSpeed;
+    private Color bulletColor;
+    private int health;
     private Rigidbody2D myRigidbody;
     private InputAction moveAction;
     private InputAction shootAction;
-    private int health = 3;
+    private GameControllerScript gameController;
+    private readonly List<GameObject> bullets = new();
+
+    public void OnDestroy()
+    {
+        foreach(GameObject bullet in bullets)
+        {
+            Destroy(bullet);
+        }
+    }
+
+    public void SetSettings(GameControllerScript.PlayerSettings settings)
+    {
+        moveSpeed = settings.moveSpeed;
+        health = settings.health;
+        bulletPrefab = settings.bullet;
+        bulletSpeed = settings.bulletSpeed;
+        bulletColor = settings.bulletColor;
+    }
+
+    public void SetGameController(GameControllerScript gameController)
+    {
+        this.gameController = gameController;
+    }
 
     void Start()
     {
@@ -28,14 +53,15 @@ public class Player : MonoBehaviour
 
         if(shootAction.WasPressedThisFrame())
         {
-            BulletScript instantiatedBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<BulletScript>();
-            instantiatedBullet.SetColor(bulletColor);
-            instantiatedBullet.SetSpeed(bulletSpeed, true);
+            BulletScript bullet = Instantiate(bulletPrefab, transform.position, transform.rotation).GetComponent<BulletScript>();
+            bullet.SetColor(bulletColor);
+            bullet.SetSpeed(bulletSpeed, true);
+            bullets.Add(bullet.gameObject);
         }
 
         if(health <= 0)
         {
-            print("Game Over!");
+            gameController.ReturnToMainMenu();
         }
     }
 

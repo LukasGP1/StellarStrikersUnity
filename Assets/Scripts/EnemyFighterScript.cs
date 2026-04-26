@@ -1,18 +1,39 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class EnemyScript : MonoBehaviour
+public class EnemyFighterScript : MonoBehaviour
 {
-    public float movementSpeed;
-    public float movementTime;
-    public float bulletShootCooldown;
-    public GameObject bullet;
-    public float bulletSpeed;
-    public Color bulletColor;
+    private float movementSpeed;
+    private float movementTime;
+    private float bulletShootCooldown;
+    private GameObject bulletPrefab;
+    private float bulletSpeed;
+    private Color bulletColor;
+    private int health;
     private Rigidbody2D myRigidbody;
     private float movementTimer;
     private float bulletShootTimer;
-    private int health = 3;
+    private readonly List<GameObject> bullets = new();
+
+    void OnDestroy()
+    {
+        foreach(GameObject bullet in bullets)
+        {
+            Destroy(bullet);
+        }
+    }
+
+    public void SetSettings(GameControllerScript.EnemyFighterSettings settings)
+    {
+        movementSpeed = settings.movementSpeed;
+        movementTime = settings.movementTime;
+        bulletShootCooldown = settings.bulletShootCooldown;
+        bulletPrefab = settings.bullet;
+        bulletSpeed = settings.bulletSpeed;
+        bulletColor = settings.bulletColor;
+        health = settings.health;
+    }
 
     void Start()
     {
@@ -42,9 +63,10 @@ public class EnemyScript : MonoBehaviour
         if(bulletShootTimer >= bulletShootCooldown)
         {
             bulletShootTimer = 0f;
-            BulletScript instantiatedBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<BulletScript>();
-            instantiatedBullet.SetColor(bulletColor);
-            instantiatedBullet.SetSpeed(bulletSpeed, false);
+            BulletScript bullet = Instantiate(bulletPrefab, transform.position, transform.rotation).GetComponent<BulletScript>();
+            bullet.SetColor(bulletColor);
+            bullet.SetSpeed(bulletSpeed, false);
+            bullets.Add(bullet.gameObject);
         }
     }
 
@@ -64,10 +86,5 @@ public class EnemyScript : MonoBehaviour
                 bullet.Collision();
             }
         }
-    }
-
-    void SetHealth(int health)
-    {
-        this.health = health;
     }
 }
