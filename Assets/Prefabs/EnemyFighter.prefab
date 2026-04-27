@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7487310897011004102}
   - component: {fileID: 7336720661639739861}
   - component: {fileID: 5813898726868938855}
+  - component: {fileID: 6145864509214237892}
   m_Layer: 0
   m_Name: EnemyFighter
   m_TagString: Untagged
@@ -133,12 +134,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09528980217e20647a96b046392b353d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyScript
-  movementSpeed: 2
-  movementTime: 1
-  bulletShootCooldown: 1.5
-  bullet: {fileID: 7173589905793831228, guid: f31cda573c61f824aab4b5671277d2c1, type: 3}
-  bulletSpeed: 10
-  bulletColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!61 &5813898726868938855
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -185,3 +180,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.3, y: 0.24}
   m_EdgeRadius: 0
+--- !u!95 &6145864509214237892
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7928445358805869550}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ea5d2973ed63d754390427d8e8aa68f2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

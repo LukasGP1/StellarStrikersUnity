@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
-
 [RequireComponent(typeof(Rigidbody2D))]
+
+[RequireComponent(typeof(Animator))]
 public class EnemyFighterScript : MonoBehaviour
 {
     private float movementSpeed;
     private float movementTime;
+    private float destructionTimer;
     private float bulletShootCooldown;
     private GameObject bulletPrefab;
     private float bulletSpeed;
@@ -15,6 +17,8 @@ public class EnemyFighterScript : MonoBehaviour
     private float movementTimer;
     private float bulletShootTimer;
     private readonly List<GameObject> bullets = new();
+    private Animator myAnimator;
+    private bool isDestroying = false;
 
     void OnDestroy()
     {
@@ -22,6 +26,12 @@ public class EnemyFighterScript : MonoBehaviour
         {
             Destroy(bullet);
         }
+    }
+
+    public void StartDestruction()
+    {
+        isDestroying = true;
+        myRigidbody.linearVelocityX = 0f;
     }
 
     public void SetSettings(GameControllerScript.EnemyFighterSettings settings)
@@ -38,16 +48,21 @@ public class EnemyFighterScript : MonoBehaviour
     void Start()
     {
         bulletShootTimer = 0f;
+        destructionTimer = 0f;
         movementTimer = movementTime / 2f;
+
+        myAnimator = GetComponent<Animator>();
         myRigidbody = GetComponent<Rigidbody2D>();
         myRigidbody.linearVelocityX = movementSpeed;
     }
 
     void Update()
     {
+        myAnimator.SetBool("IsDestroyign", isDestroying);
+
         if(health <= 0)
         {
-            Destroy(gameObject);
+            StartDestruction();
         }
 
         movementTimer += Time.deltaTime;
@@ -60,7 +75,11 @@ public class EnemyFighterScript : MonoBehaviour
 
         bulletShootTimer += Time.deltaTime;
 
-        if(bulletShootTimer >= bulletShootCooldown)
+        if(isDestroying) destructionTimer += Time.deltaTime;
+
+        if(destructionTimer >= 2.3f) Destroy(gameObject);
+
+        if(bulletShootTimer >= bulletShootCooldown && !isDestroying)
         {
             bulletShootTimer = 0f;
             BulletScript bullet = Instantiate(bulletPrefab, transform.position, transform.rotation).GetComponent<BulletScript>();

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 
 public class GameControllerScript : MonoBehaviour
@@ -14,6 +14,10 @@ public class GameControllerScript : MonoBehaviour
         public GameObject bullet;
         public float bulletSpeed;
         public Color bulletColor;
+        public Sprite baseSprite;
+        public Sprite damage0;
+        public Sprite damage1;
+        public Sprite damage2;
     }
 
     [Serializable]
@@ -29,17 +33,28 @@ public class GameControllerScript : MonoBehaviour
         public int health;
     }
 
-    public GameObject mainMenu;
+    [Serializable]
+    public struct GUISettings
+    {
+        public GameObject mainMenuGUI;
+        public GameObject inGameGUI;
+        public TMP_Text levelText;
+        public TMP_Text healthText;
+    }
+
+    public GUISettings guiSettings;
     public PlayerSettings playerSettings;
     public EnemyFighterSettings enemyFighterSettings;
 
     private bool inGame = false;
     private PlayerScript instantiatedPlayer;
     private readonly List<GameObject> instantiatedEnemies = new();
+    private int level = 1;
 
     void Update()
     {
-        mainMenu.SetActive(!inGame);
+        guiSettings.inGameGUI.SetActive(inGame);
+        guiSettings.mainMenuGUI.SetActive(!inGame);
 
         if(!inGame) return;
 
@@ -50,7 +65,7 @@ public class GameControllerScript : MonoBehaviour
         }
         if(allEnemiesDestroyed)
         {
-            ReturnToMainMenu();
+            ReturnToMainMenu(true);
         }
     }
 
@@ -67,7 +82,7 @@ public class GameControllerScript : MonoBehaviour
         instantiatedEnemies.Add(enemyFighter.gameObject);
     }
 
-    public void ReturnToMainMenu()
+    public void ReturnToMainMenu(bool completedLevel)
     {
         Destroy(instantiatedPlayer.gameObject);
         foreach(GameObject enemyFighter in instantiatedEnemies)
@@ -75,7 +90,23 @@ public class GameControllerScript : MonoBehaviour
             Destroy(enemyFighter);
         }
 
+        if(completedLevel)
+        {
+            level++;
+            UpdateLevelText();
+        }
+
         inGame = false;
+    }
+
+    private void UpdateLevelText()
+    {
+        guiSettings.levelText.text = "Level: " + level;
+    }
+
+    public void UpdateHealthText(int health)
+    {
+        guiSettings.healthText.text = "Health: " + health;
     }
 
     public void QuitGame()
